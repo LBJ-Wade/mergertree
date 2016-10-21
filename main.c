@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 
 	strcpy(Halo_catalog_name, argv[1]);
 
-	mode = atio(argv[2]);
+	mode = atoi(argv[2]);
 	
 	Random_number_seed = atoi(argv[3]);
 
@@ -57,12 +57,12 @@ int main(int argc, char *argv[])
 		reduce_tree(i);
 //printf("OK reduce!\n");
 		save_reduced_tree(i, Tree_file_name);
-printf("OK save!\n");
+//printf("OK save!\n");
         // free memory
         free_tree( ) ;
-printf("OK free!\n");
+//printf("OK free!\n");
 		TotNHalos += TreeNHalos[i];
-printf("Nhalo=%d tothalo=%d\n", TreeNHalos[i], TotNHalos);
+//printf("Nhalo=%d tothalo=%d\n", TreeNHalos[i], TotNHalos);
     }
 
 	write_tree_table( Tree_file_name, 1 );
