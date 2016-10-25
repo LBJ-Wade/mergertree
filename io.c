@@ -21,7 +21,7 @@ void read_catalogue(char *fname, int mode)
 	FILE  *fd;
   	int   i, j, check, nsub;
 	long int libuf;
-  	float z;
+  	float z, fbuf;
 
 	if(!(fd=fopen(fname,"r")))
     {
@@ -41,7 +41,7 @@ void read_catalogue(char *fname, int mode)
 
     if(mode == 0 || mode == 1) fscanf(fd, "%d", &NTrees);
     else fread(&NTrees, sizeof(int), 1, fd);
-    printf("The catalog contains %d halo!\n", NTrees);
+    printf("The catalog contains %d halo(s)!\n", NTrees);
 
     if(mode==2) fread(&z, sizeof(float), 1, fd); // gadget postprocessing
 
@@ -49,29 +49,43 @@ void read_catalogue(char *fname, int mode)
     Rvir = malloc(NTrees*sizeof(float));
     //Fpos = malloc(NTrees*sizeof(long int));
 
-    if(mode == 0)
-    {
-        for(i=0; i<NTrees; i++)
-        {
-            fscanf(fd, "%e", &Mvir[i]);
+	switch(mode)
+	{
+		case 0:
+        	for(i=0; i<NTrees; i++)
+        	{
+            	//fscanf(fd, "%e", &Mvir[i]);
+				fscanf(fd, "%f %ld %d", &Mvir[i], &libuf, &nsub);
 
-			//Mvir[i] *= 1.e10;
-            //printf("%f\n", Mvir[i]);
-        }
-    }
-    if(mode == 1)
-    {
-        for(i=0; i<NTrees; i++)
-        {
-     //       fscanf(fd, "%f %ld", &Mvir[i], &Fpos[i]);
-			fscanf(fd, "%f %ld %d", &Mvir[i], &libuf, &nsub);
-			for(j=0; j<nsub; j++)    fscanf(fd, "%ld ", &libuf);
-        }
-    }
-    if(mode == 2)
-    {
-        fread(&Mvir[0], sizeof(float), NTrees, fd);
-        fread(&Rvir[0], sizeof(float), NTrees, fd);
+				//Mvir[i] *= 1.e10;
+            	//printf("%f\n", Mvir[i]);
+        	}
+			break;
+
+		case 1:
+			fscanf(fd, "%f %ld %d", &fbuf, &libuf, &nsub);
+			for(i=0; i<NTrees; i++)
+			{
+				Mvir[i] = fbuf;
+			}
+			break;
+
+		case 2:
+        	for(i=0; i<NTrees; i++)
+        	{
+     	//       fscanf(fd, "%f %ld", &Mvir[i], &Fpos[i]);
+				fscanf(fd, "%f %ld %d", &Mvir[i], &libuf, &nsub);
+				for(j=0; j<nsub; j++)    fscanf(fd, "%ld ", &libuf);
+        	}
+			break;
+
+		case 3:
+        	fread(&Mvir[0], sizeof(float), NTrees, fd);
+        	fread(&Rvir[0], sizeof(float), NTrees, fd);
+			break;
+		default:
+            printf("give an appropriate choice!\n");
+            exit(2);
     }
 
     fclose(fd);
